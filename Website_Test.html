@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Meine erste 3D Website</title>
+    <style>
+        body {
+            margin: 0;
+            overflow: hidden; /* Verhindert Scrollbalken */
+            background-color: #111; /* Dunkler Hintergrund */
+        }
+        canvas {
+            display: block;
+        }
+    </style>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+</head>
+<body>
+
+    <script>
+        // 1. SZENE ERSTELLEN (Die Welt)
+        const scene = new THREE.Scene();
+
+        // 2. KAMERA ERSTELLEN (Die Augen des Nutzers)
+        // Parameter: Sichtfeld (FOV), Seitenverhältnis, Nahgrenze, Ferngrenze
+        const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
+        camera.position.z = 5; // Kamera ein Stück zurückbewegen, damit wir den Würfel sehen
+
+        // 3. RENDERER ERSTELLEN (Der Zeichner)
+        const renderer = new THREE.WebGLRenderer({ antialias: true });
+        renderer.setSize(window.innerWidth, window.innerHeight);
+        document.body.appendChild(renderer.domElement); // Das 3D-Fenster in die Website einfügen
+
+        // 4. OBJEKT ERSTELLEN (Ein grüner Würfel)
+        const geometry = new THREE.BoxGeometry(2, 2, 2); // Die Form (Breite, Höhe, Tiefe)
+        const material = new THREE.MeshStandardMaterial({ color: 0x00ff88, roughness: 0.3 }); // Das Material/Aussehen
+        const cube = new THREE.Mesh(geometry, material); // Form und Material verbinden
+        scene.add(cube); // Den Würfel in die Szene setzen
+
+        // 5. LICHT HINZUFÜGEN (Damit man das Material plastisch sieht)
+        const ambientLight = new THREE.AmbientLight(0xffffff, 0.4); // Sanftes Grundlicht von allen Seiten
+        scene.add(ambientLight);
+
+        const directionalLight = new THREE.DirectionalLight(0xffffff, 0.8); // Gezieltes Licht (wie die Sonne)
+        directionalLight.position.set(5, 5, 5);
+        scene.add(directionalLight);
+
+        // 6. ANIMATIONSSCHLEIFE (Wird ca. 60 Mal pro Sekunde aufgerufen)
+        function animate() {
+            requestAnimationFrame(animate);
+
+            // Den Würfel leicht drehen
+            cube.rotation.x += 0.01;
+            cube.rotation.y += 0.01;
+
+            // Das Bild neu zeichnen
+            renderer.render(scene, camera);
+        }
+
+        // Animation starten
+        animate();
+
+        // 7. REAKTIONSFÄHIGKEIT (Wenn sich die Fenstergröße ändert)
+        window.addEventListener('resize', () => {
+            camera.aspect = window.innerWidth / window.innerHeight;
+            camera.updateProjectionMatrix();
+            renderer.setSize(window.innerWidth, window.innerHeight);
+        });
+    </script>
+</body>
+</html>
