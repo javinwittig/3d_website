@@ -1,99 +1,25 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="de">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Meine 3D Szene</title>
-    <style>
-        body { margin: 0; overflow: hidden; background-color: #111; }
-        canvas { display: block; }
-    </style>
+  <meta charset="utf-8" />
+  <title>Loftgalerie</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <script type="module"
+    src="https://ajax.googleapis.com/ajax/libs/model-viewer/4.0.0/model-viewer.min.js"></script>
+  <style>
+    html, body { margin: 0; height: 100%; background: #111; }
+    model-viewer { width: 100%; height: 100%; }
+  </style>
 </head>
 <body>
-<script type="importmap">
-{
-    "imports": {
-        "three": "https://unpkg.com/three@0.160.0/build/three.module.js",
-        "three/addons/": "https://unpkg.com/three@0.160.0/examples/jsm/"
-    }
-}
-</script>
-
-<script type="module">
-    import * as THREE from 'three';
-    import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
-    import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
-
-    const scene = new THREE.Scene();
-    const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
-
-    const renderer = new THREE.WebGLRenderer({ antialias: true });
-    renderer.setSize(window.innerWidth, window.innerHeight);
-    renderer.shadowMap.enabled = true;
-    document.body.appendChild(renderer.domElement);
-
-    const controls = new OrbitControls(camera, renderer.domElement);
-    controls.enableDamping = true;
-
-    const ambientLight = new THREE.AmbientLight(0xffffff, 0.5);
-    scene.add(ambientLight);
-    const dirLight = new THREE.DirectionalLight(0xffffff, 1);
-    dirLight.position.set(5, 10, 5);
-    scene.add(dirLight);
-
-    // Google Drive direkt-Link (aus deiner File-ID)
-    const FILE_ID = '1g9VkWwtGPg1OHbLWPKa1KJWnwAhwr23M';
-    const GLB_URL = `https://drive.google.com/uc?export=download&id=${FILE_ID}`;
-
-    let mixer;
-    const loader = new GLTFLoader();
-    loader.load(
-        GLB_URL,
-        (gltf) => {
-            scene.add(gltf.scene);
-
-            // Kamera automatisch auf Szene ausrichten
-            const box = new THREE.Box3().setFromObject(gltf.scene);
-            const center = box.getCenter(new THREE.Vector3());
-            const size = box.getSize(new THREE.Vector3());
-            const maxDim = Math.max(size.x, size.y, size.z);
-            camera.position.set(center.x, center.y, center.z + maxDim * 2);
-            controls.target.set(center.x, center.y, center.z);
-            controls.update();
-
-            // Animationen starten
-            if (gltf.animations.length > 0) {
-                mixer = new THREE.AnimationMixer(gltf.scene);
-                gltf.animations.forEach((clip) => {
-                    mixer.clipAction(clip).play();
-                });
-            }
-        },
-        (progress) => {
-            if (progress.total > 0) {
-                console.log('Laden: ' + Math.round(progress.loaded / progress.total * 100) + '%');
-            }
-        },
-        (error) => {
-            console.error('Fehler beim Laden:', error);
-        }
-    );
-
-    const clock = new THREE.Clock();
-    function animate() {
-        requestAnimationFrame(animate);
-        const delta = clock.getDelta();
-        if (mixer) mixer.update(delta);
-        controls.update();
-        renderer.render(scene, camera);
-    }
-    animate();
-
-    window.addEventListener('resize', () => {
-        camera.aspect = window.innerWidth / window.innerHeight;
-        camera.updateProjectionMatrix();
-        renderer.setSize(window.innerWidth, window.innerHeight);
-    });
-</script>
+  <model-viewer
+    src="Loftgalerie2_0_24mb.glb"
+    alt="Loftgalerie 3D"
+    camera-controls
+    touch-action="pan-y"
+    exposure="1"
+    shadow-intensity="1"
+    environment-image="neutral">
+  </model-viewer>
 </body>
 </html>
